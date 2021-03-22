@@ -13,22 +13,52 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //TODO: 018 - fazer o handle do clique do botão
+        button_load_data.setOnClickListener{
+            launchAstrosTask()
+        }
     }
 
 
-    //TODO: 013 - Criar função para exibir os dados carregados
+    fun showData(list: List<AstroPeople>?) {
+        textview_data.text = ""
+        list?.forEach{ people ->
+            textview_data.append("${people.name} - ${people.craft} \n\n")
+        }
+    }
+
+    fun showLoadingIndicator(){
+        progressbar_load_indicator.visibility = View.VISIBLE
+    }
+
+    fun hideLoadingIndicator(){
+        progressbar_load_indicator.visibility = View.GONE
+    }
 
 
-    //TODO: 014 - Criar função para exibir a ProgressBar
+    fun launchAstrosTask(){
+        val task = TaskAstros()
+        task.execute()
+    }
+
+    inner class TaskAstros() : AsyncTask<Void, Int, List<AstroPeople>>(){
+        private val repository = AstrosRepository()
+
+        override fun onPreExecute() {
+            super.onPreExecute()
+            showLoadingIndicator()
+        }
+
+        override fun doInBackground(vararg params: Void?): List<AstroPeople> {
+            return repository.loadData()
+        }
+
+        override fun onPostExecute(result: List<AstroPeople>?) {
+            super.onPostExecute(result)
+            hideLoadingIndicator()
+            showData(result)
+        }
 
 
-    //TODO: 015 - Criar função para esconder a ProgressBar
-
-
-    //TODO: 017 - Criar função para lançar a Task
-
-
-    //TODO: 016 - Criar classe interna para rodar a tarefa assincrona
+    }
 
 }
